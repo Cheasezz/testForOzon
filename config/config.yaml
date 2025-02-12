@@ -1,0 +1,14 @@
+app:
+  main_storage: "postgres"
+
+http:
+  port: "8000"
+
+
+pg:
+  pool_max: 15
+  pg_url: "postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable"
+  schema_url: "migrations"
+
+logger:
+  log_level: "debug"
