@@ -1,9 +1,11 @@
 package inmemory
 
 type Repo struct {
-	*TestRepo
+	*PostRepo
 }
 
 func NewRepo() *Repo {
-	return &Repo{TestRepo: NewTestRepo()}
+	return &Repo{
+		PostRepo: NewPostRepo(),
+	}
 }

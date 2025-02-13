@@ -9,12 +9,14 @@ import (
 	"fmt"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
-	"github.com/Cheasezz/testForOzon/internal/gql/model"
 )
 
-// AllTests is the resolver for the allTests field.
-func (r *testQueryResolver) AllTests(ctx context.Context, obj *model.TestQuery) ([]*core.Test, error) {
-	fmt.Println("AllTests resolver")
-	r.env.Services.Test.CheckTest(ctx)
-	return []*core.Test{}, nil
+// CreatePost is the resolver for the createPost field.
+func (r *mutationResolver) CreatePost(ctx context.Context, input core.PostCreateInput) (*core.Post, error) {
+	post, err := r.env.Services.Post.CreatePost(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("CreatePost mutation resolver")
+	return post, nil
 }

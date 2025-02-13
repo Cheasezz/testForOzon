@@ -5,11 +5,11 @@ import (
 )
 
 type Services struct {
-	Test
+	Post
 }
 
 func New(repos *repositories.Repositories) *Services {
 	return &Services{
-		Test: NewTestService(repos),
+		Post: NewPostService(repos),
 	}
 }

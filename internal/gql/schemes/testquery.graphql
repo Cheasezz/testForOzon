@@ -1,4 +1,0 @@
-type TestQuery
-extend type Query {
-  test: TestQuery!
-}

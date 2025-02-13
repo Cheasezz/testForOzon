@@ -1,0 +1,8 @@
+type Post {
+  id             : UUID!
+  userId         : String!
+  createdAt      : Time!
+  title          : String!
+  content        : String!
+  commentsAllowed: Boolean!
+}

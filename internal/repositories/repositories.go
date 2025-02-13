@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/Cheasezz/testForOzon/config"
+	"github.com/Cheasezz/testForOzon/internal/core"
 	"github.com/Cheasezz/testForOzon/internal/repositories/inmemory"
 	"github.com/Cheasezz/testForOzon/internal/repositories/pg"
 	"github.com/Cheasezz/testForOzon/pkg/postgres"
 )
 
 type mainDB interface {
-	GetTest(ctx context.Context) error
+	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
 }
 
 type DBases struct {

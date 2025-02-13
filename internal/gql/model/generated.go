@@ -2,13 +2,8 @@
 
 package model
 
-import (
-	"github.com/Cheasezz/testForOzon/internal/core"
-)
-
-type Query struct {
+type Mutation struct {
 }
 
-type TestQuery struct {
-	AllTests []*core.Test `json:"allTests"`
+type Query struct {
 }

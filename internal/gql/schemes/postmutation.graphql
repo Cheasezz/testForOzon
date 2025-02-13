@@ -1,0 +1,10 @@
+extend type Mutation {
+  createPost(input: PostCreateInput!): Post! @goField(forceResolver: true)
+}
+
+input PostCreateInput {
+  userId         : String!
+  title          : String!
+  content        : String!
+  commentsAllowed: Boolean! = true
+}

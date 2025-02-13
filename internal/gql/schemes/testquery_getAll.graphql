@@ -1,3 +1,0 @@
-extend type TestQuery {
-  allTests: [Test!]! @goField(forceResolver: true)
-}

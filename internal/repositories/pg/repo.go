@@ -2,12 +2,16 @@ package pg
 
 import "github.com/Cheasezz/testForOzon/pkg/postgres"
 
+const (
+	postTable = "posts"
+)
+
 type Repo struct {
-	*TestRepo
+	*PostRepo
 }
 
 func NewRepo(db *postgres.Postgres) *Repo {
 	return &Repo{
-		TestRepo: NewTestRepo(db),
+		PostRepo: NewPostRepo(db),
 	}
 }
