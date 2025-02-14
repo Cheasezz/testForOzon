@@ -52,7 +52,7 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 	//Собераем комментарии для соответствующего postId
 	r.comments.m.Range(func(_, value interface{}) bool {
 		comment := value.(core.Comment)
-		if comment.PostId.String() == postId.String() {
+		if comment.PostId.String() == postId.String() && comment.ParentId == nil {
 			allComments = append(allComments, &comment)
 		}
 		return true
@@ -60,6 +60,33 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 
 	sort.Slice(allComments, func(i, j int) bool {
 		return allComments[i].CreatedAt.After(allComments[j].CreatedAt)
+	})
+
+	//Настройка пагинации
+	start := *offset
+	end := *offset + *limit
+	if start > len(allComments) {
+		return []*core.Comment{}, errOffsetToBid
+
+	}
+	if end > len(allComments) {
+		end = len(allComments)
+	}
+
+	return allComments[start:end], nil
+}
+
+func (r *CommentRepo) GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error) {
+	fmt.Println("GetReplies inmemory repo func call")
+
+	var allComments []*core.Comment
+	//Собераем комментарии ответы для соответствующего parentId
+	r.comments.m.Range(func(_, value interface{}) bool {
+		comment := value.(core.Comment)
+		if comment.ParentId != nil && comment.ParentId.String() == obj.Id.String() {
+			allComments = append(allComments, &comment)
+		}
+		return true
 	})
 
 	//Настройка пагинации

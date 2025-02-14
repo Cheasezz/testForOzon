@@ -17,6 +17,7 @@ var errToLongtext = errors.New("comment is too long (max 2000 characters)")
 type Comment interface {
 	CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error)
 	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error)
+	GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error)
 }
 
 type CommentService struct {
@@ -54,6 +55,17 @@ func (s *CommentService) GetRootComments(ctx context.Context, postId uuid.UUID, 
 	fmt.Println("GetRootComments service func call")
 
 	comments, err := s.repo.GetRootComments(ctx, postId, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}
+
+func (s *CommentService) GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error) {
+	fmt.Println("GetReplies service func call")
+
+	comments, err := s.repo.GetReplies(ctx, obj, limit, offset)
 	if err != nil {
 		return nil, err
 	}

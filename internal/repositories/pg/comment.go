@@ -97,3 +97,16 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 	return comments, nil
 }
 
+func (r *CommentRepo) GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error) {
+	fmt.Println("GetReplies pg repo func call")
+
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE  parent_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+		commentsTable)
+
+	var comments []*core.Comment
+	err := r.db.Scany.Select(ctx, r.db.Pool, &comments, query, obj.Id, *limit, *offset)
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}
