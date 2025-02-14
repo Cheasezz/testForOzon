@@ -13,10 +13,10 @@ import (
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input core.PostCreateInput) (*core.Post, error) {
+	fmt.Println("CreatePost mutation resolver")
 	post, err := r.env.Services.Post.CreatePost(ctx, input)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("CreatePost mutation resolver")
 	return post, nil
 }

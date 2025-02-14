@@ -1,3 +1,1 @@
-type Query {
-  test: String
-}
+type Query

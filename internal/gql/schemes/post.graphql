@@ -5,4 +5,5 @@ type Post {
   title          : String!
   content        : String!
   commentsAllowed: Boolean!
+  comments(limit: Int64 = 10, offset: Int64 = 0): [Comment!]! @goField(forceResolver: true)
 }

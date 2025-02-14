@@ -9,11 +9,14 @@ import (
 	"github.com/Cheasezz/testForOzon/internal/repositories/inmemory"
 	"github.com/Cheasezz/testForOzon/internal/repositories/pg"
 	"github.com/Cheasezz/testForOzon/pkg/postgres"
+	"github.com/google/uuid"
 )
 
 type mainDB interface {
 	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
+	GetPosts(ctx context.Context, id *uuid.UUID, limit,offset *int) ([]*core.Post, error) 
 	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
+	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error)
 }
 
 type DBases struct {
