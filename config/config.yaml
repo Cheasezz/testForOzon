@@ -2,7 +2,7 @@ app:
   main_storage: "memory"
 
 http:
-  port: "8000"
+  port: "8080"
 
 
 pg:

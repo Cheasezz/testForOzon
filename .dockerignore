@@ -1,0 +1,7 @@
+/bin
+/vendor
+/.git
+/.idea
+/go
+/tmp
+.env

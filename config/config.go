@@ -34,7 +34,7 @@ type Log struct {
 func NewConfig() (*Config, error) {
 	cfg := &Config{}
 
-	err := cleanenv.ReadConfig("./config/config.yaml", cfg)
+	err := cleanenv.ReadConfig("/config/config.yaml", cfg)
 	if err != nil {
 		return nil, fmt.Errorf("read config error: %w", err)
 	}
