@@ -6,10 +6,12 @@ import (
 
 type Services struct {
 	Post
+	Comment
 }
 
 func New(repos *repositories.Repositories) *Services {
 	return &Services{
-		Post: NewPostService(repos),
+		Post:    NewPostService(repos),
+		Comment: NewCommentService(repos),
 	}
 }

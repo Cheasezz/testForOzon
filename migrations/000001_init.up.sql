@@ -10,10 +10,12 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 CREATE TABLE IF NOT EXISTS posts_comments (
-  post_id UUID REFERENCES posts (id) ON DELETE CASCADE,
+  post_id UUID NOT NULL,
   id UUID PRIMARY KEY,
-  parent_id UUID NULL REFERENCES posts_comments (id) ON DELETE CASCADE,
+  parent_id UUID NULL,
   user_id VARCHAR(255) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
-  content VARCHAR(2000) NOT NULL
+  content VARCHAR(2000) NOT NULL,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (parent_id) REFERENCES posts_comments(id) ON DELETE CASCADE
 );

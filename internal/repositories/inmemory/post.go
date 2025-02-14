@@ -8,21 +8,21 @@ import (
 )
 
 type PostRepo struct {
-	data *GenericMap[string, core.Post]
+	posts *GenericMap[string, core.Post]
 }
 
 func NewPostRepo() *PostRepo {
-	return &PostRepo{data: &GenericMap[string, core.Post]{}}
+	return &PostRepo{posts: &GenericMap[string, core.Post]{}}
 }
 
 func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, error) {
+	fmt.Println("CreatePost inmemory repo func call")
 
-	r.data.Store(post.Id.String(), post)
-	res, err := r.data.Load(post.Id.String())
+	r.posts.Store(post.Id.String(), post)
+	res, err := r.posts.Load(post.Id.String())
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("CreatePost inmemory repo func call")
-	fmt.Println(res)
+
 	return &res, nil
 }

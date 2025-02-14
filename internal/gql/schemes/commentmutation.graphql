@@ -1,0 +1,10 @@
+extend type Mutation {
+  createComment(input: CommentCreateInput!): Comment! @goField(forceResolver: true)
+}
+
+input CommentCreateInput {
+  userId  : String!
+  postId  : UUID!
+  parentId: UUID
+  content : String!
+}

@@ -13,6 +13,7 @@ import (
 
 type mainDB interface {
 	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
+	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
 }
 
 type DBases struct {

@@ -1,0 +1,8 @@
+type Comment {
+  id: UUID!
+  userId: String!
+  postId: UUID!
+  parentId: UUID
+  createdAt: Time!
+  content: String!
+}

@@ -3,15 +3,18 @@ package pg
 import "github.com/Cheasezz/testForOzon/pkg/postgres"
 
 const (
-	postTable = "posts"
+	postsTable    = "posts"
+	commentsTable = "posts_comments"
 )
 
 type Repo struct {
 	*PostRepo
+	*CommentRepo
 }
 
 func NewRepo(db *postgres.Postgres) *Repo {
 	return &Repo{
-		PostRepo: NewPostRepo(db),
+		PostRepo:    NewPostRepo(db),
+		CommentRepo: NewCommentRepo(db),
 	}
 }
