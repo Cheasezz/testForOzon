@@ -13,19 +13,13 @@ import (
 )
 
 // Comments is the resolver for the comments field.
-func (r *postResolver) Comments(ctx context.Context, obj *core.Post, limit *int, offset *int) ([]*core.Comment, error) {
-	fmt.Println("Comments PostResolver func call")
-	if *limit > 50 {
-		*limit = 50
-	}
-	comment, err := r.env.Services.Comment.GetRootComments(ctx, obj.Id, limit, offset)
-	if err != nil {
-		return nil, err
-	}
-	return comment, nil
+func (r *postWithCommentsResolver) Comments(ctx context.Context, obj *core.Post, limit *int, offset *int, depth *int) ([]*core.Comment, error) {
+	panic(fmt.Errorf("not implemented: Comments - comments"))
 }
 
-// Post returns runtime.PostResolver implementation.
-func (r *Resolver) Post() runtime.PostResolver { return &postResolver{r} }
+// PostWithComments returns runtime.PostWithCommentsResolver implementation.
+func (r *Resolver) PostWithComments() runtime.PostWithCommentsResolver {
+	return &postWithCommentsResolver{r}
+}
 
-type postResolver struct{ *Resolver }
+type postWithCommentsResolver struct{ *Resolver }

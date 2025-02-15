@@ -1,9 +1,18 @@
-type Post {
+type PostWithComments {
   id             : UUID!
   userId         : String!
   createdAt      : Time!
   title          : String!
   content        : String!
   commentsAllowed: Boolean!
-  comments(limit: Int64 = 10, offset: Int64 = 0): [Comment!]! @goField(forceResolver: true)
+  comments(limit: Int64 = 10, offset: Int64 = 0, depth: Int64 = 1): [Comment!]! @goField(forceResolver: true)
+}
+
+type PostForList {
+  id             : UUID!
+  userId         : String!
+  createdAt      : Time!
+  title          : String!
+  content        : String!
+  commentsAllowed: Boolean!
 }

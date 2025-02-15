@@ -13,15 +13,20 @@ import (
 )
 
 // Posts is the resolver for the posts field.
-func (r *queryResolver) Posts(ctx context.Context, id *uuid.UUID, limit *int, offset *int) ([]*core.Post, error) {
+func (r *queryResolver) Posts(ctx context.Context, limit *int, offset *int) ([]*core.Post, error) {
 	fmt.Println("Posts query resolver")
 	// Не может быть загружено больше 50 постов за раз
 	if *limit > 50 {
 		*limit = 50
 	}
-	posts, err := r.env.Services.Post.GetPosts(ctx, id, limit, offset)
+	posts, err := r.env.Services.Post.GetPosts(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 	return posts, nil
+}
+
+// Post is the resolver for the post field.
+func (r *queryResolver) Post(ctx context.Context, id *uuid.UUID, limit *int, offset *int) (*core.Post, error) {
+	panic(fmt.Errorf("not implemented: Post - post"))
 }

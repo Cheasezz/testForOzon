@@ -16,8 +16,8 @@ var errToLongtext = errors.New("comment is too long (max 2000 characters)")
 
 type Comment interface {
 	CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error)
-	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error)
-	GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error)
+	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset, depth int) ([]*core.Comment, error)
+	// GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error)
 }
 
 type CommentService struct {
@@ -51,24 +51,49 @@ func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCr
 	return comment, nil
 }
 
-func (s *CommentService) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error) {
+func (s *CommentService) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset, depth int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments service func call")
 
-	comments, err := s.repo.GetRootComments(ctx, postId, limit, offset)
+	rootComments, err := s.repo.GetRootComments(ctx, postId, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return comments, nil
+	var flatComments []*core.Comment
+
+	for _, comment := range rootComments {
+		flatComments = append(flatComments, comment)
+		// Рекурсивно собираем вложенные комментарии, если глубина позволяет
+		if depth > 1 {
+			nested, err := s.getFlatReplies(ctx, comment, limit, offset, depth-1)
+			if err != nil {
+				return nil, err
+			}
+			flatComments = append(flatComments, nested...)
+		}
+	}
+
+	return flatComments, nil
 }
 
-func (s *CommentService) GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error) {
-	fmt.Println("GetReplies service func call")
+func (s *CommentService) getFlatReplies(ctx context.Context, comment *core.Comment, limit, offset, depth int) ([]*core.Comment, error) {
+	fmt.Println("getFlatReplies service func call")
 
-	comments, err := s.repo.GetReplies(ctx, obj, limit, offset)
+	replies, err := s.repo.GetRepliesById(ctx, comment.Id, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return comments, nil
+	var result []*core.Comment
+	for _, reply := range replies {
+		result = append(result, reply)
+		if depth > 1 {
+			nested, err := s.getFlatReplies(ctx, reply, limit, offset, depth-1)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, nested...)
+		}
+	}
+	return result, nil
 }

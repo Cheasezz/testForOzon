@@ -13,7 +13,7 @@ type Comment struct {
 	UserId    string     `json:"userId" db:"user_id"`
 	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
 	Content   string     `json:"content" db:"content"`
-	Replies   []*Comment     `json:"replies" db:"content"`
+	// Replies   []*Comment     `json:"replies" db:"content"`
 }
 
 type CommentCreateInput struct {

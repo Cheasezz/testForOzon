@@ -18,13 +18,12 @@ func (gm *GenericMap[K, V]) Store(key K, value V) {
 	gm.m.Store(key, value)
 }
 
-func (gm *GenericMap[K, V]) Load(key K) (V, error) {
+func (gm *GenericMap[K, V]) Load(key K) (*V, error) {
 	value, ok := gm.m.Load(key)
 	if !ok {
-		var zeroValue V
-		return zeroValue, errLoad
+		return nil, errLoad
 	}
-	return value.(V), nil
+	return value.(*V), nil
 }
 
 func (gm *GenericMap[K, V]) Delete(key K) {

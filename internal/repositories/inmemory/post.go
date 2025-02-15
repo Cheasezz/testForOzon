@@ -26,45 +26,44 @@ func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, 
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }
 
-func (r *PostRepo) GetPosts(ctx context.Context, id *uuid.UUID, limit, offset *int) ([]*core.Post, error) {
+func (r *PostRepo) GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error) {
 	fmt.Println("GetPosts inmemory repo func call")
 
 	var posts []*core.Post
 
-	if id != nil {
-		post, err := r.posts.Load(id.String())
-		if err != nil {
-			return nil, err
-		}
-		posts = append(posts, &post)
+	// Извлекаем все посты в срез
+	r.posts.m.Range(func(_, value interface{}) bool {
+		post := value.(*core.Post)
+		posts = append(posts, post)
+		return true
+	})
 
-		return posts, nil
-	} else {
-		// Сортируем посты по `createdAt` (свежие сверху)
-		r.posts.m.Range(func(_, value interface{}) bool {
-			post := value.(core.Post)
-			posts = append(posts, &post)
-			return true
-		})
+	// Сортируем посты по `createdAt` (сначала старые)
+	sort.Slice(posts, func(i, j int) bool {
+		return posts[j].CreatedAt.After(posts[i].CreatedAt)
+	})
 
-		// Сортируем посты по `createdAt` (свежие сверху)
-		sort.Slice(posts, func(i, j int) bool {
-			return posts[i].CreatedAt.After(posts[j].CreatedAt)
-		})
-
-		//Настройка пагинации
-		start := *offset
-		end := *offset + *limit
-		if start > len(posts) {
-			return []*core.Post{}, errOffsetToBid
-		}
-		if end > len(posts) {
-			end = len(posts)
-		}
-
-		return posts[start:end], nil
+	//Настройка пагинации
+	start := *offset
+	end := *offset + *limit
+	if start > len(posts) {
+		return []*core.Post{}, errOffsetToBid
 	}
+	if end > len(posts) {
+		end = len(posts)
+	}
+
+	return posts[start:end], nil
+}
+
+func (r *PostRepo) GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, error) {
+	post, err := r.posts.Load(postId.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return post, nil
 }

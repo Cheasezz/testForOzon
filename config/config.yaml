@@ -1,5 +1,5 @@
 app:
-  main_storage: "memory"
+  main_storage: "postgres"
 
 http:
   port: "8080"

@@ -45,7 +45,7 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 	return &comment, nil
 }
 
-func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error) {
+func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments inmemory repo func call")
 
 	var allComments []*core.Comment
@@ -63,8 +63,8 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 	})
 
 	//Настройка пагинации
-	start := *offset
-	end := *offset + *limit
+	start := offset
+	end := offset + limit
 	if start > len(allComments) {
 		return []*core.Comment{}, errOffsetToBid
 
@@ -76,22 +76,22 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 	return allComments[start:end], nil
 }
 
-func (r *CommentRepo) GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error) {
+func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetReplies inmemory repo func call")
 
 	var allComments []*core.Comment
 	//Собераем комментарии ответы для соответствующего parentId
 	r.comments.m.Range(func(_, value interface{}) bool {
 		comment := value.(core.Comment)
-		if comment.ParentId != nil && comment.ParentId.String() == obj.Id.String() {
+		if comment.ParentId != nil && comment.ParentId.String() == parentCommentId.String() {
 			allComments = append(allComments, &comment)
 		}
 		return true
 	})
 
 	//Настройка пагинации
-	start := *offset
-	end := *offset + *limit
+	start := offset
+	end := offset + limit
 	if start > len(allComments) {
 		return []*core.Comment{}, errOffsetToBid
 

@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS posts (
   comments_allowed BOOLEAN NOT NULL
 );
 
+CREATE INDEX idx_posts_created_at ON posts (created_at ASC);
+
 CREATE TABLE IF NOT EXISTS posts_comments (
   post_id UUID NOT NULL,
   id UUID PRIMARY KEY,

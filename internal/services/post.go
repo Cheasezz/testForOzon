@@ -12,7 +12,7 @@ import (
 
 type Post interface {
 	CreatePost(ctx context.Context, input core.PostCreateInput) (*core.Post, error)
-	GetPosts(ctx context.Context, id *uuid.UUID, limit, offset *int) ([]*core.Post, error)
+	GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error)
 }
 
 type PostService struct {
@@ -41,8 +41,8 @@ func (s *PostService) CreatePost(ctx context.Context, input core.PostCreateInput
 	return post, nil
 }
 
-func (s *PostService) GetPosts(ctx context.Context, id *uuid.UUID, limit, offset *int) ([]*core.Post, error) {
-	posts, err := s.repo.GetPosts(ctx, id, limit, offset)
+func (s *PostService) GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error) {
+	posts, err := s.repo.GetPosts(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}

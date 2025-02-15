@@ -84,27 +84,27 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 	return &createdComment, nil
 }
 
-func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error) {
+func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments pg repo func call")
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE post_id = $1 AND parent_id IS NULL ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
 		commentsTable)
 	var comments []*core.Comment
-	err := r.db.Scany.Select(ctx, r.db.Pool, &comments, query, postId, *limit, *offset)
+	err := r.db.Scany.Select(ctx, r.db.Pool, &comments, query, postId, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 	return comments, nil
 }
 
-func (r *CommentRepo) GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error) {
+func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetReplies pg repo func call")
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE  parent_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
 		commentsTable)
 
 	var comments []*core.Comment
-	err := r.db.Scany.Select(ctx, r.db.Pool, &comments, query, obj.Id, *limit, *offset)
+	err := r.db.Scany.Select(ctx, r.db.Pool, &comments, query, parentCommentId, limit, offset)
 	if err != nil {
 		return nil, err
 	}

@@ -125,6 +125,10 @@ autobind:
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
+  PostWithComments:
+    model: github.com/Cheasezz/testForOzon/internal/core.Post
+  PostForList:
+    model: github.com/Cheasezz/testForOzon/internal/core.Post
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID

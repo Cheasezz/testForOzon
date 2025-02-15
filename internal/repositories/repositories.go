@@ -14,10 +14,10 @@ import (
 
 type mainDB interface {
 	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
-	GetPosts(ctx context.Context, id *uuid.UUID, limit, offset *int) ([]*core.Post, error)
+	GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error)
 	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
-	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset *int) ([]*core.Comment, error)
-	GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error)
+	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error)
+	GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error)
 }
 
 type DBases struct {

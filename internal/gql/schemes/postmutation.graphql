@@ -1,5 +1,5 @@
 extend type Mutation {
-  createPost(input: PostCreateInput!): Post! @goField(forceResolver: true)
+  createPost(input: PostCreateInput!): PostForList! @goField(forceResolver: true)
 }
 
 input PostCreateInput {
