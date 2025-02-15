@@ -35,25 +35,11 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 		return nil, fmt.Errorf("%w: %w", errStartTransaction, err)
 	}
 
-	// Проверяем, разрешены ли комментарии к посту
-	var commentsAllowed bool
-	query := fmt.Sprintf(`SELECT comments_allowed FROM %s WHERE id = $1`, postsTable)
-	err = tx.QueryRow(ctx, query, comment.PostId).Scan(&commentsAllowed)
-	if err != nil {
-		tx.Rollback(ctx)
-		return nil, fmt.Errorf("%w: %w", errCheckCmtAllowed, err)
-	}
-
-	if !commentsAllowed {
-		tx.Rollback(ctx)
-		return nil, errCmntDisabled
-	}
-
 	// Проверяем, если comment.ParentId != nil, то родительский комментарий должен существовать
 	if comment.ParentId != nil {
 		var parentExists bool
 
-		query = fmt.Sprintf(`SELECT EXISTS(SELECT 1 FROM %s WHERE id = $1)`, commentsTable)
+		query := fmt.Sprintf(`SELECT EXISTS(SELECT 1 FROM %s WHERE id = $1)`, commentsTable)
 		err = tx.QueryRow(ctx, query, comment.ParentId).Scan(&parentExists)
 		if err != nil {
 			tx.Rollback(ctx)
@@ -65,7 +51,7 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 		}
 	}
 
-	query = fmt.Sprintf(`INSERT INTO %s (id, user_id, post_id, parent_id, created_at, content) 
+	query := fmt.Sprintf(`INSERT INTO %s (id, user_id, post_id, parent_id, created_at, content) 
 	          VALUES ($1, $2, $3, $4, $5, $6) 
 	          RETURNING *`, commentsTable)
 

@@ -13,6 +13,7 @@ import (
 )
 
 var errToLongtext = errors.New("comment is too long (max 2000 characters)")
+var errCmntAreProh = errors.New("comments are prohibited")
 
 type Comment interface {
 	CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error)
@@ -30,7 +31,14 @@ func NewCommentService(db *repositories.Repositories) *CommentService {
 
 func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error) {
 	fmt.Println("CreateComment service func call")
-
+	post, err := s.repo.GetPost(ctx, input.PostId)
+	if err != nil {
+		
+		return nil, err
+	}
+	if !post.CommentsAllowed {
+		return nil, errCmntAreProh
+	} 
 	if utf8.RuneCountInString(input.Content) > 2000 {
 		return nil, errToLongtext
 	}

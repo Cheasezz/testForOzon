@@ -11,37 +11,38 @@ import (
 	"github.com/google/uuid"
 )
 
-var errCmntDisabled = errors.New("comments are disabled for this post")
-var errOffsetToBid = errors.New("offset for commentaries pagination is to big")
+var (
+	errCmntDisabled       = errors.New("comments are disabled for this post")
+	errOffsetToBid        = errors.New("offset for commentaries pagination is to big")
+	errParentCmntNotExist = errors.New("parent comment does not exist")
+)
 
 type CommentRepo struct {
-	comments *GenericMap[string, core.Comment]
+	comments *GenericMap[string, *core.Comment]
 	posts    *GenericMap[string, *core.Post]
 }
 
 func NewCommentRepo(pr *PostRepo) *CommentRepo {
 	return &CommentRepo{
-		comments: &GenericMap[string, core.Comment]{},
+		comments: &GenericMap[string, *core.Comment]{},
 		posts:    pr.posts,
 	}
 }
 
 func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error) {
-	fmt.Println("Comments PostResolver func call")
+	fmt.Println("Comments inmemory repo func call")
 
-	post, err := r.posts.Load(comment.PostId.String())
-	if err != nil {
-		return nil, err
-	}
-
-	if !post.CommentsAllowed {
-		return nil, errCmntDisabled
+	if comment.ParentId != nil {
+		_, err := r.comments.Load(comment.ParentId.String())
+		if err != nil {
+			return nil, errParentCmntNotExist
+		}
 	}
 
 	comment.Id = uuid.New()
 	comment.CreatedAt = time.Now()
 
-	r.comments.Store(comment.Id.String(), comment)
+	r.comments.Store(comment.Id.String(), &comment)
 	return &comment, nil
 }
 
