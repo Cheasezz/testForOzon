@@ -10,17 +10,17 @@ import (
 )
 
 type PostRepo struct {
-	posts *GenericMap[string, core.Post]
+	posts *GenericMap[string, *core.Post]
 }
 
 func NewPostRepo() *PostRepo {
-	return &PostRepo{posts: &GenericMap[string, core.Post]{}}
+	return &PostRepo{posts: &GenericMap[string, *core.Post]{}}
 }
 
 func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, error) {
 	fmt.Println("CreatePost inmemory repo func call")
 
-	r.posts.Store(post.Id.String(), post)
+	r.posts.Store(post.Id.String(), &post)
 	res, err := r.posts.Load(post.Id.String())
 	if err != nil {
 		return nil, err
@@ -29,27 +29,30 @@ func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, 
 	return res, nil
 }
 
-func (r *PostRepo) GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error) {
+func (r *PostRepo) GetPosts(ctx context.Context, limit, offset int) ([]*core.Post, error) {
 	fmt.Println("GetPosts inmemory repo func call")
 
 	var posts []*core.Post
+	// ptr := &posts
 
 	// Извлекаем все посты в срез
 	r.posts.m.Range(func(_, value interface{}) bool {
 		post := value.(*core.Post)
+
 		posts = append(posts, post)
+		
 		return true
 	})
-
+	fmt.Println("Все посты:", posts)
 	// Сортируем посты по `createdAt` (сначала старые)
 	sort.Slice(posts, func(i, j int) bool {
 		return posts[j].CreatedAt.After(posts[i].CreatedAt)
 	})
 
 	//Настройка пагинации
-	start := *offset
-	end := *offset + *limit
-	if start > len(posts) {
+	start := offset
+	end := offset + limit
+	if start >= len(posts) {
 		return []*core.Post{}, errOffsetToBid
 	}
 	if end > len(posts) {

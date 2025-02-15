@@ -19,7 +19,7 @@ func (r *queryResolver) Posts(ctx context.Context, limit *int, offset *int) ([]*
 	if *limit > 50 {
 		*limit = 50
 	}
-	posts, err := r.env.Services.Post.GetPosts(ctx, limit, offset)
+	posts, err := r.env.Services.Post.GetPosts(ctx, *limit, *offset)
 	if err != nil {
 		return nil, err
 	}
@@ -27,6 +27,10 @@ func (r *queryResolver) Posts(ctx context.Context, limit *int, offset *int) ([]*
 }
 
 // Post is the resolver for the post field.
-func (r *queryResolver) Post(ctx context.Context, id *uuid.UUID, limit *int, offset *int) (*core.Post, error) {
-	panic(fmt.Errorf("not implemented: Post - post"))
+func (r *queryResolver) Post(ctx context.Context, id *uuid.UUID) (*core.Post, error) {
+	post, err := r.env.Services.Post.GetPost(ctx, *id)
+	if err != nil {
+		return nil, err
+	}
+	return post, nil
 }

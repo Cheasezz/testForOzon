@@ -14,7 +14,8 @@ import (
 
 type mainDB interface {
 	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
-	GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error)
+	GetPosts(ctx context.Context, limit, offset int) ([]*core.Post, error)
+	GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, error)
 	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
 	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error)
 	GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error)

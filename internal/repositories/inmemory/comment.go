@@ -16,7 +16,7 @@ var errOffsetToBid = errors.New("offset for commentaries pagination is to big")
 
 type CommentRepo struct {
 	comments *GenericMap[string, core.Comment]
-	posts    *GenericMap[string, core.Post]
+	posts    *GenericMap[string, *core.Post]
 }
 
 func NewCommentRepo(pr *PostRepo) *CommentRepo {

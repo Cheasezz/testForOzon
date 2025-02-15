@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Post  func(childComplexity int, id *uuid.UUID, limit *int, offset *int) int
+		Post  func(childComplexity int, id *uuid.UUID) int
 		Posts func(childComplexity int, limit *int, offset *int) int
 	}
 }
@@ -97,7 +97,7 @@ type PostWithCommentsResolver interface {
 }
 type QueryResolver interface {
 	Posts(ctx context.Context, limit *int, offset *int) ([]*core.Post, error)
-	Post(ctx context.Context, id *uuid.UUID, limit *int, offset *int) (*core.Post, error)
+	Post(ctx context.Context, id *uuid.UUID) (*core.Post, error)
 }
 
 type executableSchema struct {
@@ -291,7 +291,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Post(childComplexity, args["id"].(*uuid.UUID), args["limit"].(*int), args["offset"].(*int)), true
+		return e.complexity.Query.Post(childComplexity, args["id"].(*uuid.UUID)), true
 
 	case "Query.posts":
 		if e.complexity.Query.Posts == nil {
@@ -471,7 +471,7 @@ input PostCreateInput {
 `, BuiltIn: false},
 	{Name: "../schemes/postquery.graphql", Input: `extend type Query {
   posts(limit: Int64 = 10, offset: Int64 = 0): [PostForList!]! @goField(forceResolver: true)
-  post(id: UUID, limit: Int64 = 10, offset: Int64 = 0): PostWithComments! @goField(forceResolver: true)
+  post(id: UUID): PostWithComments! @goField(forceResolver: true)
 }
 `, BuiltIn: false},
 	{Name: "../schemes/query.graphql", Input: `type Query
@@ -619,16 +619,6 @@ func (ec *executionContext) field_Query_post_args(ctx context.Context, rawArgs m
 		return nil, err
 	}
 	args["id"] = arg0
-	arg1, err := ec.field_Query_post_argsLimit(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["limit"] = arg1
-	arg2, err := ec.field_Query_post_argsOffset(ctx, rawArgs)
-	if err != nil {
-		return nil, err
-	}
-	args["offset"] = arg2
 	return args, nil
 }
 func (ec *executionContext) field_Query_post_argsID(
@@ -641,32 +631,6 @@ func (ec *executionContext) field_Query_post_argsID(
 	}
 
 	var zeroVal *uuid.UUID
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_post_argsLimit(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*int, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-	if tmp, ok := rawArgs["limit"]; ok {
-		return ec.unmarshalOInt642ᚖint(ctx, tmp)
-	}
-
-	var zeroVal *int
-	return zeroVal, nil
-}
-
-func (ec *executionContext) field_Query_post_argsOffset(
-	ctx context.Context,
-	rawArgs map[string]any,
-) (*int, error) {
-	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
-	if tmp, ok := rawArgs["offset"]; ok {
-		return ec.unmarshalOInt642ᚖint(ctx, tmp)
-	}
-
-	var zeroVal *int
 	return zeroVal, nil
 }
 
@@ -1890,7 +1854,7 @@ func (ec *executionContext) _Query_post(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Post(rctx, fc.Args["id"].(*uuid.UUID), fc.Args["limit"].(*int), fc.Args["offset"].(*int))
+		return ec.resolvers.Query().Post(rctx, fc.Args["id"].(*uuid.UUID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

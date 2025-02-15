@@ -1,4 +1,4 @@
 extend type Query {
   posts(limit: Int64 = 10, offset: Int64 = 0): [PostForList!]! @goField(forceResolver: true)
-  post(id: UUID, limit: Int64 = 10, offset: Int64 = 0): PostWithComments! @goField(forceResolver: true)
+  post(id: UUID): PostWithComments! @goField(forceResolver: true)
 }

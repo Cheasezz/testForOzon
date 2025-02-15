@@ -1,12 +1,13 @@
 package inmemory
 
 import (
-	"fmt"
+	"errors"
 	"sync"
 )
 
 var (
-	errLoad = fmt.Errorf("error GenericMap.load")
+	errLoad       = errors.New("error GenericMap.load")
+	errTypeAssert = errors.New("invalid type assertion")
 )
 
 type GenericMap[K comparable, V any] struct {
@@ -18,12 +19,14 @@ func (gm *GenericMap[K, V]) Store(key K, value V) {
 	gm.m.Store(key, value)
 }
 
-func (gm *GenericMap[K, V]) Load(key K) (*V, error) {
+func (gm *GenericMap[K, V]) Load(key K) (V, error) {
 	value, ok := gm.m.Load(key)
 	if !ok {
-		return nil, errLoad
+		var zeroValue V
+		return zeroValue, errLoad
 	}
-	return value.(*V), nil
+
+	return value.(V), nil
 }
 
 func (gm *GenericMap[K, V]) Delete(key K) {

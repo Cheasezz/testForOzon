@@ -39,7 +39,7 @@ func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, 
 	return &createdPost, nil
 }
 
-func (r *PostRepo) GetPosts(ctx context.Context, limit, offset *int) ([]*core.Post, error) {
+func (r *PostRepo) GetPosts(ctx context.Context, limit, offset int) ([]*core.Post, error) {
 	fmt.Println("GetPosts pg repo func call")
 
 	var posts []*core.Post
@@ -57,7 +57,7 @@ func (r *PostRepo) GetPosts(ctx context.Context, limit, offset *int) ([]*core.Po
 func (r *PostRepo) GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, error) {
 	fmt.Println("GetPost pg repo func call")
 
-	var post *core.Post
+	var post core.Post
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE id = $1 `, postsTable)
 
@@ -67,5 +67,5 @@ func (r *PostRepo) GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, e
 		return nil, err
 	}
 
-	return post, nil
+	return &post, nil
 }
