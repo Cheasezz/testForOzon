@@ -6,15 +6,18 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
 	"github.com/Cheasezz/testForOzon/internal/gql/runtime"
 )
 
 // Comments is the resolver for the comments field.
-func (r *postWithCommentsResolver) Comments(ctx context.Context, obj *core.Post, limit *int, offset *int, depth *int) ([]*core.Comment, error) {
-	panic(fmt.Errorf("not implemented: Comments - comments"))
+func (r *postWithCommentsResolver) Comments(ctx context.Context, obj *core.Post, limit *int, offset *int) ([]*core.Comment, error) {
+	rootComments, err := r.env.Services.Comment.GetRootComments(ctx, obj.Id, *limit, *offset)
+	if err != nil {
+		return nil, err
+	}
+	return rootComments, err
 }
 
 // PostWithComments returns runtime.PostWithCommentsResolver implementation.

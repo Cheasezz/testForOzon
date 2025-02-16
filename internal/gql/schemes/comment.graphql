@@ -5,4 +5,5 @@ type Comment {
   parentId: UUID
   createdAt: Time!
   content: String!
+  repliesCount: Int64! @goField(forceResolver: true)
 }

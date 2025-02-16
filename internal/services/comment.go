@@ -17,8 +17,9 @@ var errCmntAreProh = errors.New("comments are prohibited")
 
 type Comment interface {
 	CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error)
-	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset, depth int) ([]*core.Comment, error)
-	// GetReplies(ctx context.Context, obj *core.Comment, limit, offset *int) ([]*core.Comment, error)
+	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error)
+	GetReplies(ctx context.Context, commentId uuid.UUID, limit, offset int) ([]*core.Comment, error)
+	RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error)
 }
 
 type CommentService struct {
@@ -33,12 +34,12 @@ func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCr
 	fmt.Println("CreateComment service func call")
 	post, err := s.repo.GetPost(ctx, input.PostId)
 	if err != nil {
-		
+
 		return nil, err
 	}
 	if !post.CommentsAllowed {
 		return nil, errCmntAreProh
-	} 
+	}
 	if utf8.RuneCountInString(input.Content) > 2000 {
 		return nil, errToLongtext
 	}
@@ -59,7 +60,7 @@ func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCr
 	return comment, nil
 }
 
-func (s *CommentService) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset, depth int) ([]*core.Comment, error) {
+func (s *CommentService) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments service func call")
 
 	rootComments, err := s.repo.GetRootComments(ctx, postId, limit, offset)
@@ -67,41 +68,26 @@ func (s *CommentService) GetRootComments(ctx context.Context, postId uuid.UUID, 
 		return nil, err
 	}
 
-	var flatComments []*core.Comment
-
-	for _, comment := range rootComments {
-		flatComments = append(flatComments, comment)
-		// Рекурсивно собираем вложенные комментарии, если глубина позволяет
-		if depth > 1 {
-			nested, err := s.getFlatReplies(ctx, comment, limit, offset, depth-1)
-			if err != nil {
-				return nil, err
-			}
-			flatComments = append(flatComments, nested...)
-		}
-	}
-
-	return flatComments, nil
+	return rootComments, nil
 }
 
-func (s *CommentService) getFlatReplies(ctx context.Context, comment *core.Comment, limit, offset, depth int) ([]*core.Comment, error) {
+func (s *CommentService) GetReplies(ctx context.Context, commentId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("getFlatReplies service func call")
 
-	replies, err := s.repo.GetRepliesById(ctx, comment.Id, limit, offset)
+	replies, err := s.repo.GetRepliesById(ctx, commentId, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	var result []*core.Comment
-	for _, reply := range replies {
-		result = append(result, reply)
-		if depth > 1 {
-			nested, err := s.getFlatReplies(ctx, reply, limit, offset, depth-1)
-			if err != nil {
-				return nil, err
-			}
-			result = append(result, nested...)
-		}
+	return replies, nil
+}
+
+func (s *CommentService) RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) {
+	fmt.Println("RepliesCount service func call")
+
+	count, err := s.repo.RepliesCount(ctx, commentId)
+	if err != nil {
+		return 0, err
 	}
-	return result, nil
+	return count, err
 }

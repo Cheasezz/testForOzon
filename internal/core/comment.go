@@ -13,12 +13,13 @@ type Comment struct {
 	UserId    string     `json:"userId" db:"user_id"`
 	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
 	Content   string     `json:"content" db:"content"`
-	// Replies   []*Comment     `json:"replies" db:"content"`
+	HasRplies bool       `json:"hasReplies"`
+	Replies   []*Comment `json:"replies"`
 }
 
 type CommentCreateInput struct {
-	UserId   string    `json:"userId" `
-	PostId   uuid.UUID `json:"postId" `
+	UserId   string     `json:"userId" `
+	PostId   uuid.UUID  `json:"postId" `
 	ParentId *uuid.UUID `json:"parentId" `
-	Content  string    `json:"content" `
+	Content  string     `json:"content" `
 }

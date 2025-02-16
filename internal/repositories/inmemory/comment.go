@@ -52,9 +52,9 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 	var allComments []*core.Comment
 	//Собераем комментарии для соответствующего postId
 	r.comments.m.Range(func(_, value interface{}) bool {
-		comment := value.(core.Comment)
+		comment := value.(*core.Comment)
 		if comment.PostId.String() == postId.String() && comment.ParentId == nil {
-			allComments = append(allComments, &comment)
+			allComments = append(allComments, comment)
 		}
 		return true
 	})
@@ -83,9 +83,9 @@ func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.U
 	var allComments []*core.Comment
 	//Собераем комментарии ответы для соответствующего parentId
 	r.comments.m.Range(func(_, value interface{}) bool {
-		comment := value.(core.Comment)
+		comment := value.(*core.Comment)
 		if comment.ParentId != nil && comment.ParentId.String() == parentCommentId.String() {
-			allComments = append(allComments, &comment)
+			allComments = append(allComments, comment)
 		}
 		return true
 	})
@@ -102,4 +102,16 @@ func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.U
 	}
 
 	return allComments[start:end], nil
+}
+
+func (r *CommentRepo) RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) {
+	count := 0
+	r.comments.m.Range(func(_, value interface{}) bool {
+		cmnt := value.(*core.Comment)
+		if cmnt.ParentId != nil && cmnt.ParentId.String() == commentId.String() {
+			count++
+		}
+		return true
+	})
+	return count, nil
 }

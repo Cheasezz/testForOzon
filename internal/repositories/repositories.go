@@ -19,6 +19,7 @@ type mainDB interface {
 	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
 	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error)
 	GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error)
+	RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) 
 }
 
 type DBases struct {

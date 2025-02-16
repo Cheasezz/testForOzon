@@ -96,3 +96,16 @@ func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.U
 	}
 	return comments, nil
 }
+
+func (r *CommentRepo) RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) {
+	fmt.Println("RepliesCount pg repo func call")
+
+	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE parent_id = $1`, commentsTable)
+	var count int
+	err := r.db.Pool.QueryRow(ctx,query,commentId).Scan(&count)
+	fmt.Println(count, err)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
