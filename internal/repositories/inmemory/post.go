@@ -2,11 +2,17 @@ package inmemory
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
 	"github.com/google/uuid"
+)
+
+var (
+	errCreatePost    = errors.New("create post error")
+	errPostDsntExist = errors.New("post does not exist ")
 )
 
 type PostRepo struct {
@@ -23,7 +29,7 @@ func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, 
 	r.posts.Store(post.Id.String(), &post)
 	res, err := r.posts.Load(post.Id.String())
 	if err != nil {
-		return nil, err
+		return nil, errCreatePost
 	}
 
 	return res, nil
@@ -33,17 +39,14 @@ func (r *PostRepo) GetPosts(ctx context.Context, limit, offset int) ([]*core.Pos
 	fmt.Println("GetPosts inmemory repo func call")
 
 	var posts []*core.Post
-	// ptr := &posts
 
 	// Извлекаем все посты в срез
 	r.posts.m.Range(func(_, value interface{}) bool {
 		post := value.(*core.Post)
-
 		posts = append(posts, post)
-		
 		return true
 	})
-	fmt.Println("Все посты:", posts)
+
 	// Сортируем посты по `createdAt` (сначала старые)
 	sort.Slice(posts, func(i, j int) bool {
 		return posts[j].CreatedAt.After(posts[i].CreatedAt)
@@ -65,7 +68,7 @@ func (r *PostRepo) GetPosts(ctx context.Context, limit, offset int) ([]*core.Pos
 func (r *PostRepo) GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, error) {
 	post, err := r.posts.Load(postId.String())
 	if err != nil {
-		return nil, err
+		return nil, errPostDsntExist
 	}
 
 	return post, nil

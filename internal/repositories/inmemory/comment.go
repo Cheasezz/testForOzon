@@ -32,6 +32,7 @@ func NewCommentRepo(pr *PostRepo) *CommentRepo {
 func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error) {
 	fmt.Println("Comments inmemory repo func call")
 
+	// Проверяем, если comment.ParentId != nil, то родительский комментарий должен существовать
 	if comment.ParentId != nil {
 		_, err := r.comments.Load(comment.ParentId.String())
 		if err != nil {
@@ -49,32 +50,32 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments inmemory repo func call")
 
-	var allComments []*core.Comment
+	var rootComments []*core.Comment
 	//Собераем комментарии для соответствующего postId
 	r.comments.m.Range(func(_, value interface{}) bool {
 		comment := value.(*core.Comment)
 		if comment.PostId.String() == postId.String() && comment.ParentId == nil {
-			allComments = append(allComments, comment)
+			rootComments = append(rootComments, comment)
 		}
 		return true
 	})
 
-	sort.Slice(allComments, func(i, j int) bool {
-		return allComments[i].CreatedAt.After(allComments[j].CreatedAt)
+	sort.Slice(rootComments, func(i, j int) bool {
+		return rootComments[i].CreatedAt.After(rootComments[j].CreatedAt)
 	})
 
 	//Настройка пагинации
 	start := offset
 	end := offset + limit
-	if start > len(allComments) {
+	if start > len(rootComments) {
 		return []*core.Comment{}, errOffsetToBid
 
 	}
-	if end > len(allComments) {
-		end = len(allComments)
+	if end > len(rootComments) {
+		end = len(rootComments)
 	}
 
-	return allComments[start:end], nil
+	return rootComments[start:end], nil
 }
 
 func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error) {

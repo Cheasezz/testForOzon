@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	errCreatePost = errors.New("qwe")
+	errCreatePost    = errors.New("create post error")
+	errPostDsntExist = errors.New("post does not exist ")
 )
 
 type PostRepo struct {
@@ -33,7 +34,7 @@ func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, 
 		post.Id, post.UserId, post.CreatedAt, post.Title, post.Content, post.CommentsAllowed)
 
 	if err != nil {
-		return nil, err
+		return nil, errCreatePost
 	}
 
 	return &createdPost, nil
@@ -64,7 +65,7 @@ func (r *PostRepo) GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, e
 	err := r.db.Scany.Get(ctx, r.db.Pool, &post, query, postId)
 
 	if err != nil {
-		return nil, err
+		return nil, errPostDsntExist
 	}
 
 	return &post, nil
