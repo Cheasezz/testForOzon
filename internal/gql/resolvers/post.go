@@ -13,6 +13,8 @@ import (
 
 // Comments is the resolver for the comments field.
 func (r *postWithCommentsResolver) Comments(ctx context.Context, obj *core.Post, limit *int, offset *int) ([]*core.Comment, error) {
+	// Резолвер для поля comments в graphql типе PostWithComments
+	// Загружает только рут коменты, т.е непосредственно коменты к посту, а не реплаи
 	rootComments, err := r.env.Services.Comment.GetRootComments(ctx, obj.Id, *limit, *offset)
 	if err != nil {
 		return nil, err

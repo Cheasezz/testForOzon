@@ -73,7 +73,7 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments pg repo func call")
 
-	query := fmt.Sprintf(`SELECT * FROM %s WHERE post_id = $1 AND parent_id IS NULL ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE post_id = $1 AND parent_id IS NULL ORDER BY created_at ASC LIMIT $2 OFFSET $3`,
 		commentsTable)
 	var comments []*core.Comment
 	err := r.db.Scany.Select(ctx, r.db.Pool, &comments, query, postId, limit, offset)
@@ -86,7 +86,7 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetReplies pg repo func call")
 
-	query := fmt.Sprintf(`SELECT * FROM %s WHERE  parent_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE  parent_id = $1 ORDER BY created_at ASC LIMIT $2 OFFSET $3`,
 		commentsTable)
 
 	var comments []*core.Comment

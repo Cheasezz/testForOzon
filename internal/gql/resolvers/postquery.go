@@ -19,6 +19,8 @@ func (r *queryResolver) Posts(ctx context.Context, limit *int, offset *int) ([]*
 	if *limit > 50 {
 		*limit = 50
 	}
+
+	// Вернет посты в соответствие с лимитом и офсетом. Посты будут отсортированный от старого к новому
 	posts, err := r.env.Services.Post.GetPosts(ctx, *limit, *offset)
 	if err != nil {
 		return nil, err

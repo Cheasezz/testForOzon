@@ -13,6 +13,8 @@ import (
 
 // RepliesCount is the resolver for the repliesCount field.
 func (r *commentResolver) RepliesCount(ctx context.Context, obj *core.Comment) (int, error) {
+	// Резолвер для поля repliesCount в graphql типе Comment
+	// Считает сколько комментов ссылается на родительскеий коммент (у них .parentId==obj.Id)
 	count, err := r.env.Services.Comment.RepliesCount(ctx, obj.Id)
 	if err != nil {
 		return 0, err

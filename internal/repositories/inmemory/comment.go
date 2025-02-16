@@ -60,8 +60,9 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 		return true
 	})
 
+	// Сортировка сначала старые
 	sort.Slice(rootComments, func(i, j int) bool {
-		return rootComments[i].CreatedAt.After(rootComments[j].CreatedAt)
+		return rootComments[j].CreatedAt.After(rootComments[i].CreatedAt)
 	})
 
 	//Настройка пагинации
@@ -81,28 +82,33 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetReplies inmemory repo func call")
 
-	var allComments []*core.Comment
+	var repliesComments []*core.Comment
 	//Собераем комментарии ответы для соответствующего parentId
 	r.comments.m.Range(func(_, value interface{}) bool {
 		comment := value.(*core.Comment)
 		if comment.ParentId != nil && comment.ParentId.String() == parentCommentId.String() {
-			allComments = append(allComments, comment)
+			repliesComments = append(repliesComments, comment)
 		}
 		return true
+	})
+
+	// Сортировка сначала старые
+	sort.Slice(repliesComments, func(i, j int) bool {
+		return repliesComments[j].CreatedAt.After(repliesComments[i].CreatedAt)
 	})
 
 	//Настройка пагинации
 	start := offset
 	end := offset + limit
-	if start > len(allComments) {
+	if start > len(repliesComments) {
 		return []*core.Comment{}, errOffsetToBid
 
 	}
-	if end > len(allComments) {
-		end = len(allComments)
+	if end > len(repliesComments) {
+		end = len(repliesComments)
 	}
 
-	return allComments[start:end], nil
+	return repliesComments[start:end], nil
 }
 
 func (r *CommentRepo) RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) {
