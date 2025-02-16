@@ -16,7 +16,6 @@ import (
 )
 
 const websocketKeepAlivePingInterval = 5 * time.Second
-const maxUploadSize = 30 * 1024 * 1024
 const queryCacheLRUSize = 1000
 const automaticPersistedQueryCacheLRUSize = 100
 const complexityLimit = 1000

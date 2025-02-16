@@ -19,7 +19,7 @@ func (r *queryResolver) CommentReplies(ctx context.Context, commentID uuid.UUID,
 	}
 
 	// Вернет реплаи к указанному коменту в соответствие с лимитом и офсетом.
-	// Глубина всегда 1. 
+	// Глубина всегда 1.
 	// Реплаи будут отсортированный от старого к новому
 	replies, err := r.env.Services.Comment.GetReplies(ctx, commentID, *limit, *offset)
 	if err != nil {

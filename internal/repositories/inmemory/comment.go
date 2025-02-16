@@ -122,3 +122,23 @@ func (r *CommentRepo) RepliesCount(ctx context.Context, commentId uuid.UUID) (in
 	})
 	return count, nil
 }
+
+func (r *CommentRepo) GetRepliesCounts(ctx context.Context, ids []uuid.UUID) (map[string]int, error) {
+	countMap := make(map[string]int)
+	// Инициализируем для всех ключей нулевым значением.
+	for _, id := range ids {
+		countMap[id.String()] = 0
+	}
+
+	r.comments.m.Range(func(_, value interface{}) bool {
+		comment := value.(*core.Comment)
+		if comment.ParentId != nil {
+			key := comment.ParentId.String()
+			if _, exists := countMap[key]; exists {
+				countMap[key]++
+			}
+		}
+		return true
+	})
+	return countMap, nil
+}

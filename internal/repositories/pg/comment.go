@@ -102,10 +102,35 @@ func (r *CommentRepo) RepliesCount(ctx context.Context, commentId uuid.UUID) (in
 
 	query := fmt.Sprintf(`SELECT COUNT(*) FROM %s WHERE parent_id = $1`, commentsTable)
 	var count int
-	err := r.db.Pool.QueryRow(ctx,query,commentId).Scan(&count)
-	fmt.Println(count, err)
+	err := r.db.Pool.QueryRow(ctx, query, commentId).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *CommentRepo) GetRepliesCounts(ctx context.Context, ids []uuid.UUID) (map[string]int, error) {
+	query := fmt.Sprintf(`
+	SELECT parent_id, COUNT(*) as cnt
+	FROM %s
+	WHERE parent_id = ANY($1)
+	GROUP BY parent_id;
+`, commentsTable)
+
+	rows, err := r.db.Pool.Query(ctx, query, ids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	countMap := make(map[string]int)
+	for rows.Next() {
+		var parentID uuid.UUID
+		var cnt int
+		if err := rows.Scan(&parentID, &cnt); err != nil {
+			return nil, err
+		}
+		countMap[parentID.String()] = cnt
+	}
+	return countMap, nil
 }

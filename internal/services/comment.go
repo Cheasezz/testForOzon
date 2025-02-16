@@ -9,6 +9,7 @@ import (
 
 	"github.com/Cheasezz/testForOzon/internal/core"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
+	"github.com/Cheasezz/testForOzon/internal/repositories/loaders"
 	"github.com/google/uuid"
 )
 
@@ -84,6 +85,16 @@ func (s *CommentService) GetReplies(ctx context.Context, commentId uuid.UUID, li
 
 func (s *CommentService) RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) {
 	fmt.Println("RepliesCount service func call")
+
+	dataloader, ok := ctx.Value(loaders.DataLoadersContextKey).(*loaders.DataLoaders)
+	if ok && dataloader.RepliesCountLoaderByID != nil {
+		count, err := dataloader.RepliesCountLoaderByID.L.Load(ctx, commentId)
+
+		if err != nil {
+			return 0, err
+		}
+		return count, nil
+	}
 
 	count, err := s.repo.RepliesCount(ctx, commentId)
 	if err != nil {
