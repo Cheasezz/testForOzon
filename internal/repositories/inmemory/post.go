@@ -7,6 +7,7 @@ import (
 	"sort"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
+	gSyncMap "github.com/Cheasezz/testForOzon/internal/pkg/gemericSyncMap"
 	"github.com/google/uuid"
 )
 
@@ -16,11 +17,11 @@ var (
 )
 
 type PostRepo struct {
-	posts *GenericMap[string, *core.Post]
+	posts *gSyncMap.GenericMap[string, *core.Post]
 }
 
 func NewPostRepo() *PostRepo {
-	return &PostRepo{posts: &GenericMap[string, *core.Post]{}}
+	return &PostRepo{posts: &gSyncMap.GenericMap[string, *core.Post]{}}
 }
 
 func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, error) {
@@ -41,7 +42,7 @@ func (r *PostRepo) GetPosts(ctx context.Context, limit, offset int) ([]*core.Pos
 	var posts []*core.Post
 
 	// Извлекаем все посты в срез
-	r.posts.m.Range(func(_, value interface{}) bool {
+	r.posts.Range(func(_, value interface{}) bool {
 		post := value.(*core.Post)
 		posts = append(posts, post)
 		return true

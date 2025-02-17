@@ -1,6 +1,7 @@
 package httpHandlers
 
 import (
+	"net/http"
 	"time"
 
 	gqlhandler "github.com/99designs/gqlgen/graphql/handler"
@@ -12,6 +13,7 @@ import (
 	"github.com/Cheasezz/testForOzon/internal/gql/resolvers"
 	"github.com/Cheasezz/testForOzon/internal/gql/runtime"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -29,6 +31,13 @@ func NewGraphQLHandler(env *app.Env) gin.HandlerFunc {
 
 	handler.AddTransport(transport.Websocket{
 		KeepAlivePingInterval: websocketKeepAlivePingInterval,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				// Allow exact match on host.
+				return true
+
+			},
+		},
 	})
 	handler.AddTransport(transport.Options{})
 	handler.AddTransport(transport.GET{})

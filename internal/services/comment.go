@@ -8,6 +8,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
+	"github.com/Cheasezz/testForOzon/internal/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 	"github.com/Cheasezz/testForOzon/internal/repositories/loaders"
 	"github.com/google/uuid"
@@ -24,11 +25,12 @@ type Comment interface {
 }
 
 type CommentService struct {
-	repo *repositories.Repositories
+	repo   *repositories.Repositories
+	pubsub *pubsub.PubSub
 }
 
-func NewCommentService(db *repositories.Repositories) *CommentService {
-	return &CommentService{repo: db}
+func NewCommentService(db *repositories.Repositories, ps *pubsub.PubSub) *CommentService {
+	return &CommentService{repo: db, pubsub: ps}
 }
 
 func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error) {
@@ -58,6 +60,12 @@ func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCr
 	if err != nil {
 		return nil, err
 	}
+
+	// После успешного создания публикуем событие
+	s.pubsub.Publish(pubsub.CommentEvent{
+		PostID:  comment.PostId.String(),
+		Comment: comment,
+	})
 	return comment, nil
 }
 

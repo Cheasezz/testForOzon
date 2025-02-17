@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/Cheasezz/testForOzon/config"
+	"github.com/Cheasezz/testForOzon/internal/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 	"github.com/Cheasezz/testForOzon/internal/services"
 	"github.com/Cheasezz/testForOzon/pkg/logger"
@@ -12,6 +13,7 @@ type Env struct {
 	Databases    *repositories.DBases
 	Repositories *repositories.Repositories
 	Services     *services.Services
+	PubSub       *pubsub.PubSub
 }
 
 func NewEnv(cfg *config.Config) (*Env, error) {
@@ -26,13 +28,16 @@ func NewEnv(cfg *config.Config) (*Env, error) {
 		DBMigrate(cfg, logger)
 	}
 
-	services := services.New(repos)
+	pubsub := pubsub.NewPubSub()
+
+	services := services.New(repos,pubsub)
 
 	env := Env{
 		Logger:       logger,
 		Databases:    repos.DBases,
 		Repositories: repos,
 		Services:     services,
+		PubSub:       pubsub,
 	}
 
 	return &env, nil

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/Cheasezz/testForOzon/internal/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 )
 
@@ -9,9 +10,9 @@ type Services struct {
 	Comment
 }
 
-func New(repos *repositories.Repositories) *Services {
+func New(repos *repositories.Repositories, pubsub *pubsub.PubSub) *Services {
 	return &Services{
 		Post:    NewPostService(repos),
-		Comment: NewCommentService(repos),
+		Comment: NewCommentService(repos, pubsub),
 	}
 }

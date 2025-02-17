@@ -16,7 +16,7 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input core.Comment
 	// В самом начале проверяет, можно ли оставлять комменты под постом.
 	// Добавит коммент с id поста и коммента под которым оставлен.
 	// Если id коммента под которым оставлен создаваемый коммент не указан (речь про input.ParentId),
-	// То создаваемый коммент считает корневым, т.е относится именно к посту 
+	// То создаваемый коммент считает корневым, т.е относится именно к посту
 	comment, err := r.env.Services.Comment.CreateComment(ctx, input)
 	if err != nil {
 		return nil, err

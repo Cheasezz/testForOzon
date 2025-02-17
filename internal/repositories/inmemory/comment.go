@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
+	gSyncMap "github.com/Cheasezz/testForOzon/internal/pkg/gemericSyncMap"
 	"github.com/google/uuid"
 )
 
@@ -18,13 +19,13 @@ var (
 )
 
 type CommentRepo struct {
-	comments *GenericMap[string, *core.Comment]
-	posts    *GenericMap[string, *core.Post]
+	comments *gSyncMap.GenericMap[string, *core.Comment]
+	posts    *gSyncMap.GenericMap[string, *core.Post]
 }
 
 func NewCommentRepo(pr *PostRepo) *CommentRepo {
 	return &CommentRepo{
-		comments: &GenericMap[string, *core.Comment]{},
+		comments: &gSyncMap.GenericMap[string, *core.Comment]{},
 		posts:    pr.posts,
 	}
 }
@@ -52,7 +53,7 @@ func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, lim
 
 	var rootComments []*core.Comment
 	//Собераем комментарии для соответствующего postId
-	r.comments.m.Range(func(_, value interface{}) bool {
+	r.comments.Range(func(_, value interface{}) bool {
 		comment := value.(*core.Comment)
 		if comment.PostId.String() == postId.String() && comment.ParentId == nil {
 			rootComments = append(rootComments, comment)
@@ -84,7 +85,7 @@ func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.U
 
 	var repliesComments []*core.Comment
 	//Собераем комментарии ответы для соответствующего parentId
-	r.comments.m.Range(func(_, value interface{}) bool {
+	r.comments.Range(func(_, value interface{}) bool {
 		comment := value.(*core.Comment)
 		if comment.ParentId != nil && comment.ParentId.String() == parentCommentId.String() {
 			repliesComments = append(repliesComments, comment)
@@ -113,7 +114,7 @@ func (r *CommentRepo) GetRepliesById(ctx context.Context, parentCommentId uuid.U
 
 func (r *CommentRepo) RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error) {
 	count := 0
-	r.comments.m.Range(func(_, value interface{}) bool {
+	r.comments.Range(func(_, value interface{}) bool {
 		cmnt := value.(*core.Comment)
 		if cmnt.ParentId != nil && cmnt.ParentId.String() == commentId.String() {
 			count++
@@ -130,7 +131,7 @@ func (r *CommentRepo) GetRepliesCounts(ctx context.Context, ids []uuid.UUID) (ma
 		countMap[id.String()] = 0
 	}
 
-	r.comments.m.Range(func(_, value interface{}) bool {
+	r.comments.Range(func(_, value interface{}) bool {
 		comment := value.(*core.Comment)
 		if comment.ParentId != nil {
 			key := comment.ParentId.String()

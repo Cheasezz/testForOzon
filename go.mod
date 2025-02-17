@@ -8,6 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.17.64
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/vektah/gqlparser/v2 v2.5.22
+	github.com/vikstrous/dataloadgen v0.0.6
 )
 
 require (
@@ -34,7 +35,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lib/pq v1.10.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -46,7 +46,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	github.com/vikstrous/dataloadgen v0.0.6 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
@@ -65,7 +64,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/gorilla/websocket v1.5.0
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.7.2
