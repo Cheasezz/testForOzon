@@ -7,7 +7,7 @@ import (
 	"sort"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
-	gSyncMap "github.com/Cheasezz/testForOzon/internal/pkg/gemericSyncMap"
+	"github.com/Cheasezz/testForOzon/pkg/gSyncMap"
 	"github.com/google/uuid"
 )
 
@@ -17,11 +17,11 @@ var (
 )
 
 type PostRepo struct {
-	posts *gSyncMap.GenericMap[string, *core.Post]
+	posts *gSyncMap.GSyncMap[string, *core.Post]
 }
 
 func NewPostRepo() *PostRepo {
-	return &PostRepo{posts: &gSyncMap.GenericMap[string, *core.Post]{}}
+	return &PostRepo{posts: gSyncMap.NewGenericSyncMap[string, *core.Post]()}
 }
 
 func (r *PostRepo) CreatePost(ctx context.Context, post core.Post) (*core.Post, error) {

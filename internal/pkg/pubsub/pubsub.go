@@ -3,11 +3,11 @@ package pubsub
 import (
 	"fmt"
 
-	gSyncMap "github.com/Cheasezz/testForOzon/internal/pkg/gemericSyncMap"
+	"github.com/Cheasezz/testForOzon/pkg/gSyncMap"
 )
 
 type CommentEvent struct {
-	PostID string
+	PostID  string
 	Comment interface{}
 }
 
@@ -15,12 +15,12 @@ type Subscriber chan CommentEvent
 
 type PubSub struct {
 	// ключ – postID, значение – список подписчиков
-	subscribers *gSyncMap.GenericMap[string, []Subscriber] 
+	subscribers *gSyncMap.GSyncMap[string, []Subscriber]
 }
 
 func NewPubSub() *PubSub {
 	return &PubSub{
-		subscribers: &gSyncMap.GenericMap[string, []Subscriber]{},
+		subscribers: gSyncMap.NewGenericSyncMap[string, []Subscriber](),
 	}
 }
 

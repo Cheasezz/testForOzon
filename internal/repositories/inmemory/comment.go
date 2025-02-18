@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
-	gSyncMap "github.com/Cheasezz/testForOzon/internal/pkg/gemericSyncMap"
+	"github.com/Cheasezz/testForOzon/pkg/gSyncMap"
 	"github.com/google/uuid"
 )
 
@@ -19,13 +19,13 @@ var (
 )
 
 type CommentRepo struct {
-	comments *gSyncMap.GenericMap[string, *core.Comment]
-	posts    *gSyncMap.GenericMap[string, *core.Post]
+	comments *gSyncMap.GSyncMap[string, *core.Comment]
+	posts    *gSyncMap.GSyncMap[string, *core.Post]
 }
 
 func NewCommentRepo(pr *PostRepo) *CommentRepo {
 	return &CommentRepo{
-		comments: &gSyncMap.GenericMap[string, *core.Comment]{},
+		comments: gSyncMap.NewGenericSyncMap[string, *core.Comment](),
 		posts:    pr.posts,
 	}
 }
