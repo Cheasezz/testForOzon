@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/Cheasezz/testForOzon/internal/pkg/pubsub"
+	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 )
 

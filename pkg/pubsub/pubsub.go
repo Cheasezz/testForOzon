@@ -40,9 +40,9 @@ func (ps *PubSub) Subscribe(keyId string) Subscriber {
 }
 
 // Unsubscribe удаляет подписчика.
-func (ps *PubSub) Unsubscribe(postID string, sub Subscriber) {
+func (ps *PubSub) Unsubscribe(keyId string, sub Subscriber) {
 
-	value, err := ps.subscribers.Load(postID)
+	value, err := ps.subscribers.Load(keyId)
 	if err != nil {
 		return
 	}
@@ -50,7 +50,7 @@ func (ps *PubSub) Unsubscribe(postID string, sub Subscriber) {
 	for i, s := range subs {
 		if s == sub {
 			newSubs := append(subs[:i], subs[i+1:]...)
-			ps.subscribers.Store(postID, newSubs)
+			ps.subscribers.Store(keyId, newSubs)
 			close(s)
 			break
 		}

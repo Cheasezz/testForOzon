@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/Cheasezz/testForOzon/config"
-	"github.com/Cheasezz/testForOzon/internal/pkg/pubsub"
+	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 	"github.com/Cheasezz/testForOzon/internal/services"
 	"github.com/Cheasezz/testForOzon/pkg/logger"

@@ -8,7 +8,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
-	"github.com/Cheasezz/testForOzon/internal/pkg/pubsub"
+	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 	"github.com/Cheasezz/testForOzon/internal/repositories/loaders"
 	"github.com/google/uuid"
