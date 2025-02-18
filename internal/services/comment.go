@@ -63,7 +63,7 @@ func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCr
 
 	// После успешного создания публикуем событие
 	s.pubsub.Publish(pubsub.CommentEvent{
-		PostID:  comment.PostId.String(),
+		KeyId:  comment.PostId.String(),
 		Comment: comment,
 	})
 	return comment, nil

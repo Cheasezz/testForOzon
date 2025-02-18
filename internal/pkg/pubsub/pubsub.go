@@ -7,7 +7,7 @@ import (
 )
 
 type CommentEvent struct {
-	PostID  string
+	KeyId  string
 	Comment interface{}
 }
 
@@ -25,16 +25,16 @@ func NewPubSub() *PubSub {
 }
 
 // Subscribe подписывается на события для конкретного postID.
-func (ps *PubSub) Subscribe(postID string) Subscriber {
+func (ps *PubSub) Subscribe(keyId string) Subscriber {
 	sub := make(Subscriber, 10)
 	// Получаем текущее значение или создаем новое
-	existing, loaded := ps.subscribers.LoadOrStore(postID, []Subscriber{sub})
+	existing, loaded := ps.subscribers.LoadOrStore(keyId, []Subscriber{sub})
 	if loaded {
 		// Если значение уже есть, то existing — это срез подписчиков.
 		subs := existing
 		// Создаем новый срез, добавляя нашего нового подписчика.
 		newSubs := append(subs, sub)
-		ps.subscribers.Store(postID, newSubs)
+		ps.subscribers.Store(keyId, newSubs)
 	}
 	return sub
 }
@@ -59,12 +59,12 @@ func (ps *PubSub) Unsubscribe(postID string, sub Subscriber) {
 
 // Publish рассылает событие всем подписчикам, зарегистрированным на данный postID.
 func (ps *PubSub) Publish(event CommentEvent) {
-	value, err := ps.subscribers.Load(event.PostID)
+	value, err := ps.subscribers.Load(event.KeyId)
 	if err != nil {
 		return
 	}
 	subs := value
-	fmt.Printf("From Publish pubsub: %v", subs)
+	
 	for _, sub := range subs {
 		select {
 		case sub <- event:

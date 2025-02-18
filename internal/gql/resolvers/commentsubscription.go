@@ -14,7 +14,10 @@ import (
 
 // CommentAdded is the resolver for the commentAdded field.
 func (r *subscriptionResolver) CommentAdded(ctx context.Context, postID uuid.UUID) (<-chan *core.Comment, error) {
-	fmt.Printf("CommentAdded Sunbscription call")
+	// Создаем "подписчика" (просто канал) для поста и добавляем его к другим
+	// Метод PubSub.Publish срабатывает во вермя добавления комментария на уровне сервисов.
+	// Сообщает, что был добавлен коммент, т.е. в PubSub.Publish передает ивент, в которм, posId и сам коммент
+	// И оповещение отправляется всем "подписчикам" необходимого поста
 	sub := r.env.PubSub.Subscribe(postID.String())
 	
 	commentsChan := make(chan *core.Comment, 10)
