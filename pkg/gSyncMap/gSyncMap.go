@@ -1,5 +1,7 @@
 package gSyncMap
 
+//go:generate mockgen -package gSyncMap -source=gSyncMap.go -destination=mocks_test.go
+
 import (
 	"errors"
 	"sync"
@@ -17,6 +19,13 @@ type GSyncMap[K comparable, V any] struct {
 
 func NewGenericSyncMap[K comparable, V any]() *GSyncMap[K, V] {
 	return new(GSyncMap[K, V])
+}
+
+type IGSyncMap[K comparable, V any] interface {
+	Load(key K) (V, error)
+	Delete(key K)
+	Range(f func(key K, value V) bool)
+	LoadOrStore(key K, value V) (V, bool)
 }
 
 func (gm *GSyncMap[K, V]) Store(key K, value V) {
@@ -38,8 +47,15 @@ func (gm *GSyncMap[K, V]) Delete(key K) {
 	gm.m.Delete(key)
 }
 
-func (gm *GSyncMap[K, V]) Range(f func(key any, value any) bool) {
-	gm.m.Range(f)
+func (gm *GSyncMap[K, V]) Range(f func(key K, value V) bool) {
+	gm.m.Range(func(key, value interface{}) bool {
+		k, ok1 := key.(K)
+		v, ok2 := value.(V)
+		if !ok1 || !ok2 {
+			return false
+		}
+		return f(k, v)
+	})
 }
 
 func (gm *GSyncMap[K, V]) LoadOrStore(key K, value V) (V, bool) {

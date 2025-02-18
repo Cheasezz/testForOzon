@@ -7,6 +7,7 @@ toolchain go1.22.12
 require (
 	github.com/99designs/gqlgen v0.17.64
 	github.com/golang-migrate/migrate v3.5.4+incompatible
+	github.com/golang/mock v1.6.0
 	github.com/vektah/gqlparser/v2 v2.5.22
 	github.com/vikstrous/dataloadgen v0.0.6
 )

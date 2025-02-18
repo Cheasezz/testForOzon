@@ -42,8 +42,7 @@ func (r *PostRepo) GetPosts(ctx context.Context, limit, offset int) ([]*core.Pos
 	var posts []*core.Post
 
 	// Извлекаем все посты в срез
-	r.posts.Range(func(_, value interface{}) bool {
-		post := value.(*core.Post)
+	r.posts.Range(func(key string, post *core.Post) bool {
 		posts = append(posts, post)
 		return true
 	})

@@ -7,7 +7,7 @@ import (
 )
 
 type CommentEvent struct {
-	KeyId  string
+	KeyId   string
 	Comment interface{}
 }
 
@@ -64,7 +64,7 @@ func (ps *PubSub) Publish(event CommentEvent) {
 		return
 	}
 	subs := value
-	
+
 	for _, sub := range subs {
 		select {
 		case sub <- event:
