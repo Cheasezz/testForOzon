@@ -2,10 +2,10 @@ package app
 
 import (
 	"github.com/Cheasezz/testForOzon/config"
-	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 	"github.com/Cheasezz/testForOzon/internal/services"
 	"github.com/Cheasezz/testForOzon/pkg/logger"
+	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 )
 
 type Env struct {
@@ -30,7 +30,7 @@ func NewEnv(cfg *config.Config) (*Env, error) {
 
 	pubsub := pubsub.NewPubSub()
 
-	services := services.New(repos,pubsub)
+	services := services.New(repos, pubsub, logger)
 
 	env := Env{
 		Logger:       logger,
