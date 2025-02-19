@@ -12,25 +12,17 @@ import (
 	"github.com/google/uuid"
 )
 
-// type mainDB interface {
-// 	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
-// 	GetPosts(ctx context.Context, limit, offset int) ([]*core.Post, error)
-// 	GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, error)
-// 	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
-// 	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error)
-// 	GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error)
-// 	RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error)
-// 	GetRepliesCounts(ctx context.Context, ids []uuid.UUID) (map[string]int, error)
-// }
+//go:generate mockgen -package repositories -source=repositories.go -destination=mocks_repositories.go
 
-type postRepo interface {
+type PostRepo interface {
 	CreatePost(ctx context.Context, post core.Post) (*core.Post, error)
 	GetPosts(ctx context.Context, limit, offset int) ([]*core.Post, error)
 	GetPost(ctx context.Context, postId uuid.UUID) (*core.Post, error)
 }
 
-type commentRepo interface {
+type CommentRepo interface {
 	CreateComment(ctx context.Context, comment core.Comment) (*core.Comment, error)
+	CommentForPostAllowed(ctx context.Context, postId uuid.UUID) (bool, error)
 	GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error)
 	GetRepliesById(ctx context.Context, parentCommentId uuid.UUID, limit, offset int) ([]*core.Comment, error)
 	RepliesCount(ctx context.Context, commentId uuid.UUID) (int, error)
@@ -43,8 +35,8 @@ type DBases struct {
 
 type Repositories struct {
 	*DBases
-	postRepo
-	commentRepo
+	PostRepo
+	CommentRepo
 }
 
 func New(cfg *config.Config) (*Repositories, error) {
@@ -58,16 +50,16 @@ func New(cfg *config.Config) (*Repositories, error) {
 
 		return &Repositories{
 			DBases:      &DBases{Psql: psql},
-			postRepo:    pg.NewPostRepo(psql),
-			commentRepo: pg.NewCommentRepo(psql),
+			PostRepo:    pg.NewPostRepo(psql),
+			CommentRepo: pg.NewCommentRepo(psql),
 		}, nil
 
 	case "memory":
 		postRepo := inmemory.NewPostRepo()
 
 		return &Repositories{
-			postRepo:    postRepo,
-			commentRepo: inmemory.NewCommentRepo(postRepo),
+			PostRepo:    postRepo,
+			CommentRepo: inmemory.NewCommentRepo(postRepo),
 		}, nil
 	default:
 		return nil, fmt.Errorf("unknown repository type: %s", cfg.APP.MainStorage)

@@ -1,10 +1,18 @@
 package pubsub
 
+//go:generate mockgen -package pubsub -source=pubsub.go -destination=mocks_pubsub.go
+
 import (
 	"fmt"
 
 	"github.com/Cheasezz/testForOzon/pkg/gSyncMap"
 )
+
+type IPubSub interface {
+	Subscribe(keyId string) Subscriber
+	Unsubscribe(keyId string, sub Subscriber)
+	Publish(event CommentEvent)
+}
 
 type CommentEvent struct {
 	KeyId   string

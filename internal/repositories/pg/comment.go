@@ -70,6 +70,19 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 	return &createdComment, nil
 }
 
+func (r *CommentRepo) CommentForPostAllowed(ctx context.Context, postId uuid.UUID) (bool, error) {
+	fmt.Println("CommentForPostAllowed pg repo func call")
+
+	query := fmt.Sprintf(`SELECT comments_allowed FROM %s WHERE id = $1`, postsTable)
+	var commentAllowed bool
+	err := r.db.Scany.Get(ctx, r.db.Pool, &commentAllowed, query, postId)
+	if err != nil {
+		return false, errPostDsntExist
+	}
+
+	return commentAllowed, nil
+}
+
 func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments pg repo func call")
 

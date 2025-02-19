@@ -1,5 +1,7 @@
 package logger
 
+//go:generate mockgen -package logger -source=logger.go -destination=mocks_logger.go
+
 import (
 	"fmt"
 	"os"
@@ -8,13 +10,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// type Logger interface {
-// 	Debug(message interface{}, args ...interface{})
-// 	Info(message string, args ...interface{})
-// 	Warn(message string, args ...interface{})
-// 	Error(message interface{}, args ...interface{})
-// 	Fatal(message interface{}, args ...interface{})
-// }
+type Logger interface {
+	Debug(message interface{}, args ...interface{})
+	Info(message string, args ...interface{})
+	Warn(message string, args ...interface{})
+	Error(message interface{}, args ...interface{})
+	Fatal(message interface{}, args ...interface{})
+}
 
 type Lg struct {
 	logger *logrus.Logger

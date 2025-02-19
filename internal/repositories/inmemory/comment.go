@@ -48,6 +48,15 @@ func (r *CommentRepo) CreateComment(ctx context.Context, comment core.Comment) (
 	return &comment, nil
 }
 
+func (r *CommentRepo) CommentForPostAllowed(ctx context.Context, postId uuid.UUID) (bool, error) {
+	post, err := r.posts.Load(postId.String())
+	if err != nil {
+		return false, errPostDsntExist
+	}
+
+	return post.CommentsAllowed, nil
+}
+
 func (r *CommentRepo) GetRootComments(ctx context.Context, postId uuid.UUID, limit, offset int) ([]*core.Comment, error) {
 	fmt.Println("GetRootComments inmemory repo func call")
 

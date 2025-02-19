@@ -1,6 +1,6 @@
 package gSyncMap
 
-//go:generate mockgen -package gSyncMap -source=gSyncMap.go -destination=mocks_test.go
+//go:generate mockgen -package gSyncMap -source=gSyncMap.go -destination=mocks_gSyncMap.go
 
 import (
 	"errors"

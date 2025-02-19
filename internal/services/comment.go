@@ -8,9 +8,10 @@ import (
 	"unicode/utf8"
 
 	"github.com/Cheasezz/testForOzon/internal/core"
-	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 	"github.com/Cheasezz/testForOzon/internal/repositories"
 	"github.com/Cheasezz/testForOzon/internal/repositories/loaders"
+	"github.com/Cheasezz/testForOzon/pkg/logger"
+	"github.com/Cheasezz/testForOzon/pkg/pubsub"
 	"github.com/google/uuid"
 )
 
@@ -25,22 +26,22 @@ type Comment interface {
 }
 
 type CommentService struct {
-	repo   *repositories.Repositories
-	pubsub *pubsub.PubSub
+	repo   repositories.CommentRepo
+	pubsub pubsub.IPubSub
+	log    logger.Logger
 }
 
-func NewCommentService(db *repositories.Repositories, ps *pubsub.PubSub) *CommentService {
-	return &CommentService{repo: db, pubsub: ps}
+func NewCommentService(db repositories.CommentRepo, ps pubsub.IPubSub, log logger.Logger) *CommentService {
+	return &CommentService{repo: db, pubsub: ps, log: log}
 }
 
 func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCreateInput) (*core.Comment, error) {
-	fmt.Println("CreateComment service func call")
-	post, err := s.repo.GetPost(ctx, input.PostId)
+	ok, err := s.repo.CommentForPostAllowed(ctx, input.PostId)
 	if err != nil {
-
+		s.log.Error("Error in CommentService.CreateComment from repo.CommentForPostAllowed: %w", err)
 		return nil, err
 	}
-	if !post.CommentsAllowed {
+	if !ok {
 		return nil, errCmntAreProh
 	}
 	if utf8.RuneCountInString(input.Content) > 2000 {
@@ -63,7 +64,7 @@ func (s *CommentService) CreateComment(ctx context.Context, input core.CommentCr
 
 	// После успешного создания публикуем событие
 	s.pubsub.Publish(pubsub.CommentEvent{
-		KeyId:  comment.PostId.String(),
+		KeyId:   comment.PostId.String(),
 		Comment: comment,
 	})
 	return comment, nil

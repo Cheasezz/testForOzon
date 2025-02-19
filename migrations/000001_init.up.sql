@@ -22,4 +22,4 @@ CREATE TABLE IF NOT EXISTS posts_comments (
   FOREIGN KEY (parent_id) REFERENCES posts_comments(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_comments_post_created_at ON posts_comments (post_id, created_at DESC);
+CREATE INDEX idx_comments_post_created_at ON posts_comments (post_id, created_at ASC);
